@@ -1,22 +1,31 @@
 const express = require('express')
 const cors = require('cors')
 require('dotenv').config({ path: '/config.env' })
-const path = require('path');
+const bodyParser = require('body-parser')
+    //conection db
+const db = require('./config/db')
 
 
-const server = express();
+
+
+
+const app = express();
 
 //  midlelware
-server.use(cors())
-server.use(express.json({ extended: false }))
+app.use(cors())
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //  Routes file
 const { login } = require('./controllers/login');
 
 //  Routes
-server.use("/api/login", login)
+app.use("/api/login", login)
 
 //  Conexión
 const PORT = 5000 || process.env.PORT
 
-server.listen(PORT, () => console.log(`Servidor conectado en el puerto ${PORT}`))
+app.listen(PORT, () => console.log(`Servidor conectado en el puerto:  \x1b[36m%s\x1b[0m`, `${PORT} `));
+
+
+//clg('server puerto: \x1b[32m%s\x1b[0m','online');
