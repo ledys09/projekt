@@ -2,25 +2,28 @@ const express = require('express')
 const cors = require('cors')
 require('dotenv').config({ path: '/config.env' })
 const bodyParser = require('body-parser')
-    //conection db
+
+//conection db
 const db = require('./config/db')
-
-
 
 
 
 const app = express();
 
-//  midlelware
+//  Middelwares
 app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//  Routes file
-const { login } = require('./controllers/login');
 
-//  Routes
-app.use("/api/login", login)
+//  Importar rutas
+const { login } = require('./controllers/login');
+const { registerClient, registerEnterprise } = require('./controllers/usuario')
+
+//  Rutas
+app.use("/api/login", login);
+app.use("/api/registerClient", registerClient);
+app.use("/api/registerEnterprise", registerEnterprise);
 
 //  Conexión
 const PORT = 5000 || process.env.PORT
