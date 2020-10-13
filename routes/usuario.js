@@ -5,23 +5,16 @@ const { registerClient, registerEnterprise } = require('../controllers/usuario')
 
 
 router.route("/").post([
-        check("nombres").exists(),
-        check("apellidos").exists(),
-        check("direccion").exists(),
-        check("contrasena").isLength({ min: 8 }),
-        check("correo").isEmail().exists(),
-        check("telefono").exists(),
+        check("nombres", "Ingrese nombres válidos").exists(),
+        check("apellidos", "Ingrese apellidos válidos").exists(),
+        check("direccion", "Ingrese apellidos válidos").exists(),
+        check("contrasena", "Ingrese 8 caracteres min").isLength({ min: 8 }),
+        check("correo", "Ingrese correo válido").isEmail().exists(),
+        check("telefono", "Ingrese teléfono válido").isNumeric(),
 
     ],
     registerClient);
 
 router.route("/").get(registerEnterprise);
-
-module.exports = router;
-
-
-
-
-
 
 module.exports = router;
