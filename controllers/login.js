@@ -1,15 +1,16 @@
 const Usuario = require('../models/usuario')
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 
 //@desc     Loguear usuario
-//@route    /api/login
+//@route    POST    /api/login
 //@access   public
 exports.login = (req, res) => {
+    /*  res.send('hola login'); */
     var body = req.body;
 
     Usuario.findOne({ correo: body.correo }, (err, usuariodb) => {
-        console.log(usuariodb)
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -21,21 +22,25 @@ exports.login = (req, res) => {
         if (!usuariodb) {
             return res.status(404).json({
                 success: false,
-                msg: 'Credenciales invalidas correo',
+                msg: 'Credenciales invalidas',
                 errors: err
             })
         }
-        if (!bcrypt.compareSync(body.contrasena), usuariodb.contrasena) {
+
+        if (!bcrypt.compareSync(body.contrasena, usuariodb.contrasena)) {
             return res.status(404).json({
                 success: false,
-                msg: 'Credenciales invalidas contra',
+                msg: 'Credenciales invalidas',
                 errors: err
             })
         }
-        //crear token 
+        //create token 
+
+        const token = jwt.sign({ usuario: usuariodb }, process.env.JWT_SEED, { expiresIn: process.env.JWT_EXP })
         res.status(200).json({
             success: true,
-            data: usuariodb,
+            token: token,
+            usuario: usuariodb.correo,
             id: usuariodb._id
         })
     })

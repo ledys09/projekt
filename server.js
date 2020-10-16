@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-require('dotenv').config({ path: '/config.env' })
+require('dotenv').config({ path: './config/config.env' })
 const bodyParser = require('body-parser')
 
 //conection db
@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //  Importar rutas
 const { login } = require('./controllers/login');
-const { registerClient, registerEnterprise } = require('./controllers/usuario')
+const { registerClient, registerEnterprise } = require('./controllers/register')
 
 //  Rutas
 app.use("/api/login", login);
