@@ -1,13 +1,14 @@
-const Usuario = require('../models/usuario')
+const Usuario = require('../models/user')
 const { validationResult } = require('express-validator')
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 
 
 
 //@desc     Registrar nuevo cliente
 //@route    POST /api/registerClient
 //@access   Public
-exports.registerClient = async(req, res) => {
+exports.registerClient = (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -30,6 +31,7 @@ exports.registerClient = async(req, res) => {
         });
         nuevoUsuario.save((err) => {
             if (err) {
+
                 return res.status(400).json({
                     success: false,
                     msg: "Error al crear usuario",

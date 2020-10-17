@@ -6,8 +6,6 @@ const bodyParser = require('body-parser')
 //conection db
 const db = require('./config/db')
 
-
-
 const app = express();
 
 //  Middelwares
@@ -17,13 +15,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 //  Importar rutas
-const { login } = require('./controllers/login');
-const { registerClient, registerEnterprise } = require('./controllers/register')
+const login = require("./routes/login");
+const user = require("./routes/user");
 
 //  Rutas
 app.use("/api/login", login);
-app.use("/api/registerClient", registerClient);
-app.use("/api/registerEnterprise", registerEnterprise);
+app.use("/api/user", user);
+
+
 
 //  Conexión
 const PORT = 5000 || process.env.PORT
