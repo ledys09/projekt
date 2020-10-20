@@ -1,12 +1,12 @@
 const Usuario = require('../models/user')
+const Empresa = require('../models/enterprise')
 const { validationResult } = require('express-validator')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
 
 
 
 //@desc     Registrar nuevo cliente
-//@route    POST /api/registerClient
+//@route    POST /api/registerclient
 //@access   Public
 exports.registerClient = (req, res) => {
     const errors = validationResult(req);
@@ -58,20 +58,67 @@ exports.registerClient = (req, res) => {
 
 
 //@desc     Registrar nueva empresa
-//@route    POST /api/registerEnterprise
+//@route    POST /api/registerenterprise
 //@access   Public
 exports.registerEnterprise = (req, res) => {
-    Usuario.find({}, (err, usuarios) => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                msg: "Server error",
-                error: err
-            });
-        }
-        res.status(200).json({
-            success: true,
-            data: usuarios
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            msg: "Error en validaciones",
+            errors: errors
         });
-    });
+    }
+
+    try {
+        const {
+            nombreEmpresa,
+            nombrePropietario,
+            plan,
+            direccion,
+            contrasena,
+            correo,
+            telefono
+        } = req.body;
+        const password = bcrypt.hashSync(contrasena, 10);
+        const nuevaEmpresa = new Empresa({
+            nombreEmpresa,
+            nombrePropietario,
+            plan,
+            direccion,
+            contrasena: password,
+            correo,
+            telefono
+        });
+        nuevaEmpresa.save((err) => {
+            if (err) {
+
+                return res.status(400).json({
+                    success: false,
+                    msg: "Error al crear empresa",
+                    errors: err
+                });
+            }
+            return res.status(201).json({
+                success: true,
+                msg: "Registrado correctamente",
+                data: nuevaEmpresa
+            });
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error en el servidor",
+            error: error
+        })
+    }
+};
+
+//@desc     Registro de nuevo admin
+//@route    POST /api/registeradmin
+//@access   Private(Solo admin)
+exports.registerAdmin = (req, res) => {
+
 };

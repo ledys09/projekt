@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 
 //Verify token
-exports.verifyToken = (req, res, next) => {
+module.exports = (req, res, next) => {
     const token = req.query.token;
 
     jwt.verify(token, process.env.JWT_SEED, (err, decoded) => {
@@ -21,5 +21,4 @@ exports.verifyToken = (req, res, next) => {
         decoded: decoded 
 })*/
     })
-
 }

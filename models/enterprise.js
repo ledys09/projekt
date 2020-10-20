@@ -7,18 +7,19 @@ const rolesValidos = {
     message: '{VALUE} no es un rol permitido'
 }
 
-const usuarioSchema = new Schema({
+const empresaSchema = new Schema({
 
-    nombres: { type: String, required: [true, 'Nombres obligatorio'] },
-    apellidos: { type: String, required: [true, 'Apellidos obligatorio'] },
-    foto: { type: String, default: null },
+    nombreEmpresa: { type: String, unique: true, required: [true, 'Nombre empresa obligatorio'] },
+    nombrePropietario: { type: String, required: [true, 'Nombre propietario obligatorio'] },
+    logoTipo: { type: String, default: null },
+    plan: { type: String, required: [true, 'Plan obligatorio'] },
     correo: { type: String, unique: true, required: [true, 'Correo obligatorio'] },
     contrasena: { type: String, required: [true, 'Contraseña obligatoria'] },
     telefono: { type: String, required: [true, 'Teléfono obligatorio'] },
     direccion: { type: String, required: [true, 'Dirección obligatorio'] },
-    role: { type: String, required: true, default: 'client_role', enum: rolesValidos }
+    role: { type: String, required: true, default: 'enterprise_role', enum: rolesValidos }
 });
 
-usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe ser único' })
+empresaSchema.plugin(uniqueValidator, { message: '{PATH} debe ser único' })
 
-module.exports = mongoose.model('Usuario', usuarioSchema);
+module.exports = mongoose.model('Empresa', empresaSchema);
