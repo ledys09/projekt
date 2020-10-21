@@ -1,14 +1,14 @@
-const Usuario = require('../models/user')
-const Empresa = require('../models/enterprise')
-const { validationResult } = require('express-validator')
+const Usuario = require('../models/user');
+const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
+const _ = require('underscore');
 
 
 
 //@desc     Registrar nuevo cliente
 //@route    POST /api/registerclient
 //@access   Public
-exports.registerClient = (req, res) => {
+exports.registerClient = async(req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -19,7 +19,14 @@ exports.registerClient = (req, res) => {
     }
 
     try {
-        const { nombres, apellidos, direccion, contrasena, correo, telefono } = req.body;
+        const {
+            nombres,
+            apellidos,
+            direccion,
+            contrasena,
+            correo,
+            telefono
+        } = req.body;
         const password = bcrypt.hashSync(contrasena, 10);
         const nuevoUsuario = new Usuario({
             nombres,
@@ -27,9 +34,10 @@ exports.registerClient = (req, res) => {
             direccion,
             contrasena: password,
             correo,
-            telefono
+            telefono,
+            role: 'client_role'
         });
-        nuevoUsuario.save((err) => {
+        await nuevoUsuario.save((err) => {
             if (err) {
 
                 return res.status(400).json({
@@ -60,7 +68,7 @@ exports.registerClient = (req, res) => {
 //@desc     Registrar nueva empresa
 //@route    POST /api/registerenterprise
 //@access   Public
-exports.registerEnterprise = (req, res) => {
+exports.registerEnterprise = async(req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -72,8 +80,9 @@ exports.registerEnterprise = (req, res) => {
 
     try {
         const {
+            nombres,
+            apellidos,
             nombreEmpresa,
-            nombrePropietario,
             plan,
             direccion,
             contrasena,
@@ -81,16 +90,19 @@ exports.registerEnterprise = (req, res) => {
             telefono
         } = req.body;
         const password = bcrypt.hashSync(contrasena, 10);
-        const nuevaEmpresa = new Empresa({
+        const nuevaEmpresa = new Usuario({
+
+            nombres,
+            apellidos,
             nombreEmpresa,
-            nombrePropietario,
             plan,
             direccion,
             contrasena: password,
             correo,
-            telefono
+            telefono,
+            role: 'enterprise_role'
         });
-        nuevaEmpresa.save((err) => {
+        await nuevaEmpresa.save((err) => {
             if (err) {
 
                 return res.status(400).json({
@@ -119,6 +131,134 @@ exports.registerEnterprise = (req, res) => {
 //@desc     Registro de nuevo admin
 //@route    POST /api/registeradmin
 //@access   Private(Solo admin)
-exports.registerAdmin = (req, res) => {
+exports.registerAdmin = async(req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            msg: 'Error en validaciones',
+            errors
+        })
+    }
 
+    try {
+        const {
+            nombres,
+            apellidos,
+            contrasena,
+            correo
+        } = req.body;
+        const password = bcrypt.hashSync(contrasena, 10);
+        const nuevoAdmin = new Usuario({
+            nombres,
+            apellidos,
+            contrasena: password,
+            correo,
+            role: 'admin_role'
+        });
+        await nuevoAdmin.save(err => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error al crear admin',
+                    errors: err
+                })
+            }
+            return res.status(201).json({
+                success: true,
+                msg: 'Registrado correctamente',
+                data: nuevoAdmin
+            })
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error en el servidor',
+            error
+        })
+    }
 };
+
+
+//@desc     Obtener usuarios por rol
+//@route    GET /api/user/:role
+//@access   Public
+exports.users = async(req, res) => {
+    try {
+        const role = req.params.role;
+        //console.log(empresa_id)
+        await Usuario.find({ role: role }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error en base de datos',
+                    errors: err
+                })
+            }
+            return res.status(200).json({
+                success: true,
+                msg: 'Usuarios obtenidos',
+                data
+            })
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error en el servidor',
+            error
+        })
+    }
+
+}
+
+
+//@desc     Actualizar usuario
+//@route    PUT /api/user/:id
+//@access   Private (all roles)
+exports.updateUser = async(req, res) => {
+
+    try {
+        const id = req.params.id;
+        const body = _.pick(
+            req.body, [
+                'nombres',
+                'apellidos',
+                'foto',
+                'telefono',
+                'direccion',
+                'correo'
+            ]
+        );
+
+
+        Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, UsuarioDB) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error al actualizar',
+                    errors: err
+                })
+            }
+            return res.status(200).json({
+                success: true,
+                msg: 'Usuario Actualizado',
+                UsuarioDB
+            })
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error en el servidor',
+            error
+        })
+    }
+}
+
+
+//@desc     Eliminar usuario
+//@route    DELETE /api/user/id
+//@access   Private(admin_role)
+exports.deleteUser = async(req, res) => {
+
+}

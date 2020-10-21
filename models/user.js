@@ -11,12 +11,14 @@ const usuarioSchema = new Schema({
 
     nombres: { type: String, required: [true, 'Nombres obligatorio'] },
     apellidos: { type: String, required: [true, 'Apellidos obligatorio'] },
+    nombreEmpresa: { type: String },
+    plan: { type: String },
     foto: { type: String, default: null },
     correo: { type: String, unique: true, required: [true, 'Correo obligatorio'] },
     contrasena: { type: String, required: [true, 'Contraseña obligatoria'] },
-    telefono: { type: String, required: [true, 'Teléfono obligatorio'] },
-    direccion: { type: String, required: [true, 'Dirección obligatorio'] },
-    role: { type: String, required: true, default: 'client_role', enum: rolesValidos }
+    telefono: { type: String },
+    direccion: { type: String },
+    role: { type: String, required: true, enum: rolesValidos }
 });
 
 usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe ser único' })
