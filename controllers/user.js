@@ -221,12 +221,14 @@ exports.updateUser = async(req, res) => {
         const id = req.params.id;
         const body = _.pick(
             req.body, [
+                'nombreEmpresa',
                 'nombres',
                 'apellidos',
                 'foto',
                 'telefono',
                 'direccion',
-                'correo'
+                'correo',
+                'plan'
             ]
         );
 
@@ -260,5 +262,29 @@ exports.updateUser = async(req, res) => {
 //@route    DELETE /api/user/id
 //@access   Private(admin_role)
 exports.deleteUser = async(req, res) => {
+    try {
+        const id = req.params.id;
 
+        Usuario.findByIdAndRemove(id, (err, UsuarioDB) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error al eliminar',
+                    errors: err
+                })
+            }
+            return res.status(200).json({
+                success: true,
+                msg: 'Usuario eliminado',
+                UsuarioDB
+            })
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error en el servidor',
+            error
+        })
+    }
 }
