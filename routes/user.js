@@ -57,4 +57,5 @@ router.route("/:role").get(users);
 router.route("/:id").put(auth, updateUser);
 
 router.route("/:id").delete(auth, authorize("admin_role"), deleteUser)
+
 module.exports = router;
