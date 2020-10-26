@@ -17,7 +17,7 @@ router.route("/").post([
     ], auth, authorize("enterprise_role")
 ], createCategory);
 
-router.route("/:id").get(categories);
+router.route("/:idEmpresa").get(categories);
 
 router.route("/:id").put(auth, authorize("enterprise_role"), updateCategory);
 

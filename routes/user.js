@@ -8,6 +8,7 @@ const {
     registerEnterprise,
     registerAdmin,
     users,
+    user,
     updateUser,
     deleteUser
 } = require('../controllers/user')
@@ -52,7 +53,9 @@ router.route("/registeradmin").post([
     ], auth, authorize("admin_role")
 ], registerAdmin);
 
-router.route("/:role").get(users);
+router.route("/users/:role").get(auth, authorize("admin_role"), users);
+
+router.route("/:id").get(user);
 
 router.route("/:id").put(auth, updateUser);
 

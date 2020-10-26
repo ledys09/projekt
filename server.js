@@ -18,12 +18,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const login = require("./routes/login");
 const user = require("./routes/user");
 const category = require("./routes/category")
+const product = require("./routes/product")
 
 //  Rutas
 app.use("/api/login", login);
 app.use("/api/user", user);
 app.use("/api/category", category);
-
+app.use("/api/product", product);
 
 
 //  Conexión

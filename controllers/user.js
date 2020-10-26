@@ -180,9 +180,46 @@ exports.registerAdmin = async(req, res) => {
 };
 
 
+//@desc     Obtener un solo usuario
+//@route    GET /api/user/:id
+//@access   Public
+exports.user = async(req, res) => {
+    try {
+        const id = req.params.id;
+        //console.log(empresa_id)
+        await Usuario.find({ _id: id }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error en base de datos',
+                    errors: err
+                })
+            }
+            if (data == '') {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'No existe usuario'
+                })
+            }
+            return res.status(200).json({
+                success: true,
+                msg: 'Usuario obtenido',
+                data
+            })
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error en el servidor',
+            error
+        })
+    }
+
+}
+
 //@desc     Obtener usuarios por rol
 //@route    GET /api/user/:role
-//@access   Public
+//@access   Private (admin_role)
 exports.users = async(req, res) => {
     try {
         const role = req.params.role;
@@ -193,6 +230,12 @@ exports.users = async(req, res) => {
                     success: false,
                     msg: 'Error en base de datos',
                     errors: err
+                })
+            }
+            if (data == '') {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'No existen usuarios'
                 })
             }
             return res.status(200).json({

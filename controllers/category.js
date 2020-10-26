@@ -50,11 +50,11 @@ exports.createCategory = async(req, res) => {
 };
 
 //@desc     Obtener todas las categorias
-//@route    GET /api/category/:id
+//@route    GET /api/category/:idEmpresa
 //@access   public 
 exports.categories = async(req, res) => {
     try {
-        const empresa_id = req.params.id;
+        const empresa_id = req.params.idEmpresa;
         //console.log(empresa_id)
         await Categoria.find({ usuario: empresa_id }, (err, data) => {
             if (err) {
@@ -62,6 +62,12 @@ exports.categories = async(req, res) => {
                     success: false,
                     msg: 'Error en base de datos',
                     errors: err
+                })
+            }
+            if (data == '') {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'No existen categorias'
                 })
             }
             return res.status(200).json({
