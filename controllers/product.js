@@ -1,5 +1,6 @@
 const Producto = require('../models/product')
 const { validationResult } = require('express-validator')
+const product = require('../models/product')
 
 //@desc     Crear un nuevo producto
 //@route    POST /api/product
@@ -93,7 +94,7 @@ exports.products = async(req, res) => {
 exports.product = async(req, res) => {
     try {
         const idProducto = req.params.idProducto;
-        await Producto.find({ categoria: idProducto }, (err, data) => {
+        await Producto.find({ _id: idProducto }, (err, data) => {
             if (err) {
                 return res.status(400).json({
                     success: false,
@@ -138,6 +139,12 @@ exports.updateProduct = (req, res) => {
                     errors: err
                 })
             }
+            if (productoDB == null) {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'No existe este producto'
+                })
+            }
             return res.status(200).json({
                 success: true,
                 msg: 'producto actualizado',
@@ -167,6 +174,13 @@ exports.deleteProduct = async(req, res) => {
                     success: false,
                     msg: 'Error al eliminar',
                     errors: err
+                })
+            }
+
+            if (productoDB == null) {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'No existe este producto'
                 })
             }
             return res.status(200).json({

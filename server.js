@@ -17,14 +17,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //  Importar rutas
 const login = require("./routes/login");
 const user = require("./routes/user");
-const category = require("./routes/category")
-const product = require("./routes/product")
+const category = require("./routes/category");
+const product = require("./routes/product");
+const upload = require("./routes/upload")
 
 //  Rutas
 app.use("/api/login", login);
 app.use("/api/user", user);
 app.use("/api/category", category);
 app.use("/api/product", product);
+app.use("/api/upload", upload);
 
 
 //  Conexión
