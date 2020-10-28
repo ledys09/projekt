@@ -1,8 +1,9 @@
 /node_modules
 *.env
-*.txt
+ejemplo_data.txt
 
 /tmp
+
 uploads/filesEnterprise/*
 uploads/imgProfile/admin/*
 uploads/imgProfile/client/*
