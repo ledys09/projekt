@@ -1,0 +1,2 @@
+Dentro de carpeta uploads crear la carpeta: 
+filesEnterprise

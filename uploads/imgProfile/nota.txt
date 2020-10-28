@@ -1,0 +1,4 @@
+Dentro de carpeta 'imgProfile' crear carpetas:
+admin
+client
+enterprise
