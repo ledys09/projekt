@@ -4,7 +4,30 @@ ejemplo_data.txt
 
 /tmp
 
+!folder/
+folder/*
+!folder/*.txt
+
+!uploads/
+uploads/*
+!uploads/*.txt
+
+!uploads/filesEnterprise
 uploads/filesEnterprise/*
+!uploads/filesEnterprise/*.txt
+
+!uploads/imgProfile
+uploads/imgProfile/*
+!uploads/imgProfile/*.txt
+
+!uploads/imgProfile/admin
 uploads/imgProfile/admin/*
+!uploads/imgProfile/admin/*.txt
+
+!uploads/imgProfile/client
 uploads/imgProfile/client/*
+!uploads/imgProfile/client/*.txt
+
+!uploads/imgProfile/enterprise
 uploads/imgProfile/enterprise/*
+!uploads/imgProfile/enterprise/*.txt

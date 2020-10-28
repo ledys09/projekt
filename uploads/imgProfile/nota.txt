@@ -1,4 +1,1 @@
-Dentro de carpeta 'imgProfile' crear carpetas:
-admin
-client
-enterprise
+Aqui almacena la foto de perfil de los usuarios.
