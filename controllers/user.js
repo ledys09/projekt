@@ -20,8 +20,7 @@ exports.registerClient = async(req, res) => {
 
     try {
         const {
-            nombres,
-            apellidos,
+            nombre,
             direccion,
             contrasena,
             correo,
@@ -29,8 +28,7 @@ exports.registerClient = async(req, res) => {
         } = req.body;
         const password = bcrypt.hashSync(contrasena, 10);
         const nuevoUsuario = new Usuario({
-            nombres,
-            apellidos,
+            nombre,
             direccion,
             contrasena: password,
             correo,
@@ -80,8 +78,7 @@ exports.registerEnterprise = async(req, res) => {
 
     try {
         const {
-            nombres,
-            apellidos,
+            nombre,
             nombreEmpresa,
             plan,
             direccion,
@@ -92,8 +89,7 @@ exports.registerEnterprise = async(req, res) => {
         const password = bcrypt.hashSync(contrasena, 10);
         const nuevaEmpresa = new Usuario({
 
-            nombres,
-            apellidos,
+            nombre,
             nombreEmpresa,
             plan,
             direccion,
@@ -143,15 +139,13 @@ exports.registerAdmin = async(req, res) => {
 
     try {
         const {
-            nombres,
-            apellidos,
+            nombre,
             contrasena,
             correo
         } = req.body;
         const password = bcrypt.hashSync(contrasena, 10);
         const nuevoAdmin = new Usuario({
-            nombres,
-            apellidos,
+            nombre,
             contrasena: password,
             correo,
             role: 'admin_role'
@@ -265,8 +259,7 @@ exports.updateUser = async(req, res) => {
         const body = _.pick(
             req.body, [
                 'nombreEmpresa',
-                'nombres',
-                'apellidos',
+                'nombre',
                 'foto',
                 'telefono',
                 'direccion',

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
+
 const uniqueValidator = require('mongoose-unique-validator')
 
 const rolesValidos = {
@@ -9,11 +10,10 @@ const rolesValidos = {
 
 const usuarioSchema = new Schema({
 
-    nombres: { type: String, required: [true, 'Nombres obligatorio'] },
-    apellidos: { type: String, required: [true, 'Apellidos obligatorio'] },
+    nombre: { type: String, required: [true, 'Nombres obligatorio'] },
     nombreEmpresa: { type: String },
     plan: { type: String },
-    foto: { type: String, default: null },
+    foto: { type: String, default: './uploads/imgProfile/no-img.png' },
     correo: { type: String, unique: true, required: [true, 'Correo obligatorio'] },
     contrasena: { type: String, required: [true, 'Contraseña obligatoria'] },
     telefono: { type: String },

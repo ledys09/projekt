@@ -18,8 +18,7 @@ const {
 
 router.route("/registerclient").post(
     [
-        check("nombres", "Ingrese nombres").exists(),
-        check("apellidos", "Ingrese apellidos").exists(),
+        check("nombre", "Ingrese nombres").exists(),
         check("direccion", "Ingrese dirección").exists(),
         check("contrasena", "Ingrese 8 caracteres min").isLength({ min: 8 }),
         check("correo", "Ingrese correo").isEmail().exists(),
@@ -32,8 +31,7 @@ router.route("/registerclient").post(
 
 router.route("/registerenterprise").post([
         check("nombreEmpresa", "Ingrese nombre de la empresa").exists(),
-        check("nombres", "Ingrese nombre del propietario").exists(),
-        check("apellidos", "Ingrese apellido del propietario").exists(),
+        check("nombre", "Ingrese nombre del propietario").exists(),
         check("direccion", "Ingrese dirección").exists(),
         check("plan", "Ingrese plan").exists(),
         check("contrasena", "Ingrese 8 caracteres min").isLength({ min: 8 }).exists(),
@@ -46,8 +44,7 @@ router.route("/registerenterprise").post([
 
 router.route("/registeradmin").post([
     [
-        check("nombres", "Ingrese nombres").exists(),
-        check("apellidos", "Ingrese apellidos").exists(),
+        check("nombre", "Ingrese nombres").exists(),
         check("correo", "Ingrese correo").exists(),
         check("contrasena", "Ingrese contraseña").isLength({ min: 8 }).exists()
     ], auth, authorize("admin_role")
