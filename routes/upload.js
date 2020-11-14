@@ -6,6 +6,7 @@ const app = express()
 const {
     filesUser,
     imgPerfil,
+    img,
     files,
     updateFile,
     deleteFile
@@ -20,6 +21,8 @@ app.route("/img-perfil").put(auth, imgPerfil);
 app.route("/files").post(auth, authorize("enterprise_role"), filesUser);
 
 app.route("/:tipo").get(auth, authorize("enterprise_role"), files);
+
+app.route("/perfil/:img").get(auth, img);
 
 app.route("/:id").put(auth, authorize("enterprise_role"), updateFile);
 

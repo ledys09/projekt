@@ -272,3 +272,40 @@ exports.deleteFile = async(req, res) => {
         })
     }
 }
+
+
+//@desc     Obtener la img de perfil
+//@route    GET /api/upload/:img
+//@access   Private(auth)
+exports.img = async(req, res) => {
+    try {
+        const img = req.params.img
+        const usuario = req.usuario;
+        let tipoUser = '';
+
+        if (usuario.role == 'client_role') {
+            tipoUser = 'client';
+        }
+        if (usuario.role == 'enterprise_role') {
+            tipoUser = 'enterprise';
+        }
+        if (usuario.role == 'admin_role') {
+            tipoUser = 'admin';
+        }
+        const pathImg = pathD.resolve(__dirname, `../uploads/imgProfile/${tipoUser}/${img}`);
+        if (fs.existsSync(pathImg)) {
+            res.sendFile(pathImg);
+        } else {
+            const pathNoImg = pathD.resolve(__dirname, '../uploads/imgProfile/no-img.png');
+            res.sendFile(pathNoImg);
+        }
+
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error interno del servidor',
+            error
+        })
+    }
+};

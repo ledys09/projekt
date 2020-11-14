@@ -4,9 +4,7 @@ ejemplo_data.txt
 
 /tmp
 
-!folder/
-folder/*
-!folder/*.txt
+
 
 !uploads/
 uploads/*
