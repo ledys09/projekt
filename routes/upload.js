@@ -16,13 +16,13 @@ const {
 app.use(fileUpload({ useTempFiles: true }));
 
 
-app.route("/img-perfil").put(auth, imgPerfil);
+app.route("/img-perfil/:tipo/:id").put(imgPerfil);
 
 app.route("/files").post(auth, authorize("enterprise_role"), filesUser);
 
 app.route("/:tipo").get(auth, authorize("enterprise_role"), files);
 
-app.route("/perfil/:img").get(auth, img);
+app.route("/perfil/:tipo/:img").get(img);
 
 app.route("/:id").put(auth, authorize("enterprise_role"), updateFile);
 

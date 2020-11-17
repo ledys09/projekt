@@ -44,11 +44,12 @@ exports.login = (req, res) => {
                 })
             }
             //create token 
-            const token = jwt.sign({ usuario: usuariodb }, process.env.JWT_SEED, { expiresIn: process.env.JWT_EXP })
+            const token = jwt.sign({ usuario: usuariodb }, process.env.JWT_SEED, { expiresIn: process.env.JWT_EXP });
+            usuariodb.contrasena = ':)'
             res.status(200).json({
                 success: true,
                 token: token,
-                usuario: usuariodb.correo,
+                usuario: usuariodb,
                 id: usuariodb._id,
                 role: usuariodb.role
             })

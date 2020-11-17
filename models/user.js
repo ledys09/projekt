@@ -13,7 +13,7 @@ const usuarioSchema = new Schema({
     nombre: { type: String, required: [true, 'Nombres obligatorio'] },
     nombreEmpresa: { type: String },
     plan: { type: String },
-    foto: { type: String, default: './uploads/imgProfile/no-img.png' },
+    foto: { type: String, default: 'no-img.png' },
     correo: { type: String, unique: true, required: [true, 'Correo obligatorio'] },
     contrasena: { type: String, required: [true, 'Contraseña obligatoria'] },
     telefono: { type: String },

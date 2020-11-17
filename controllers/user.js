@@ -277,6 +277,7 @@ exports.updateUser = async(req, res) => {
                     errors: err
                 })
             }
+            UsuarioDB.contrasena = ':)';
             return res.status(200).json({
                 success: true,
                 msg: 'Usuario Actualizado',

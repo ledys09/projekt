@@ -8,21 +8,13 @@ const _ = require('underscore');
 
 
 //@desc     Actualizar foto de perfil
-//@route    PUT /api/upload/img-perfil
+//@route    PUT /api/upload/img-perfil/:tipo/:id
 //@access   Private (auth)
 exports.imgPerfil = async(req, res) => {
     try {
-        let tipoUser = '';
-        const usuario = req.usuario;
-        if (usuario.role == 'client_role') {
-            tipoUser = 'client';
-        }
-        if (usuario.role == 'enterprise_role') {
-            tipoUser = 'enterprise';
-        }
-        if (usuario.role == 'admin_role') {
-            tipoUser = 'admin';
-        }
+        const tipoUser = req.params.tipo;
+        const _id = req.params.id;
+
         if (!req.files) {
             return res.status(400).json({
                 success: false,
@@ -43,7 +35,7 @@ exports.imgPerfil = async(req, res) => {
             })
         }
 
-        const nombreArchivo = `${ usuario._id }-${new Date().getMonth()}.${extension}`;
+        const nombreArchivo = `${_id }-${ new Date().getMilliseconds() }.${ extension }`;
         const path = `./uploads/imgProfile/${tipoUser}/${nombreArchivo}`;
         archivoSubir.mv(path, (err) => {
             if (err) {
@@ -55,7 +47,7 @@ exports.imgPerfil = async(req, res) => {
             }
         });
         // asignar foto a un usuario
-        await Usuario.findById(usuario._id, (err, usuario) => {
+        await Usuario.findById(_id, (err, usuario) => {
             if (err) {
                 return res.status(400).json({
                     success: false,
@@ -63,6 +55,7 @@ exports.imgPerfil = async(req, res) => {
                     err
                 })
             }
+
             const pathBefore = `./uploads/imgProfile/${tipoUser}/${usuario.foto}`
             if (fs.existsSync(pathBefore)) {
                 fs.unlinkSync(pathBefore);
@@ -275,23 +268,13 @@ exports.deleteFile = async(req, res) => {
 
 
 //@desc     Obtener la img de perfil
-//@route    GET /api/upload/:img
+//@route    GET /api/upload/perfil/:tipo/:img
 //@access   Private(auth)
 exports.img = async(req, res) => {
     try {
         const img = req.params.img
-        const usuario = req.usuario;
-        let tipoUser = '';
+        const tipoUser = req.params.tipo;
 
-        if (usuario.role == 'client_role') {
-            tipoUser = 'client';
-        }
-        if (usuario.role == 'enterprise_role') {
-            tipoUser = 'enterprise';
-        }
-        if (usuario.role == 'admin_role') {
-            tipoUser = 'admin';
-        }
         const pathImg = pathD.resolve(__dirname, `../uploads/imgProfile/${tipoUser}/${img}`);
         if (fs.existsSync(pathImg)) {
             res.sendFile(pathImg);
