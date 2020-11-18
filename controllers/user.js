@@ -52,7 +52,6 @@ exports.registerClient = async(req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             success: false,
             msg: "Error en el servidor",
@@ -217,27 +216,44 @@ exports.user = async(req, res) => {
 exports.users = async(req, res) => {
     try {
         const role = req.params.role;
+        var desde = req.query.desde || 0;
+        desde = Number(desde);
         //console.log(empresa_id)
-        await Usuario.find({ role: role }, (err, data) => {
-            if (err) {
-                return res.status(400).json({
-                    success: false,
-                    msg: 'Error en base de datos',
-                    errors: err
+        await Usuario.find({ role: role }, 'nombre correo foto role nombreEmpresa ')
+            .skip(desde)
+            .limit(5)
+            .exec(
+                (err, data) => {
+                    if (err) {
+                        return res.status(400).json({
+                            success: false,
+                            msg: 'Error en base de datos',
+                            errors: err
+                        })
+                    }
+                    if (data == '') {
+                        return res.status(404).json({
+                            success: false,
+                            msg: 'No existen usuarios'
+                        })
+                    }
+                    Usuario.count({ role: role }, (err, conteo) => {
+                        if (err) {
+                            return res.status(400).json({
+                                success: false,
+                                msg: 'Error en el conteo',
+                                errors: err
+                            })
+                        }
+                        return res.status(200).json({
+                            success: true,
+                            msg: 'Usuarios obtenidos',
+                            data,
+                            total: conteo
+                        })
+                    })
+
                 })
-            }
-            if (data == '') {
-                return res.status(404).json({
-                    success: false,
-                    msg: 'No existen usuarios'
-                })
-            }
-            return res.status(200).json({
-                success: true,
-                msg: 'Usuarios obtenidos',
-                data
-            })
-        })
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -296,7 +312,7 @@ exports.updateUser = async(req, res) => {
 
 
 //@desc     Eliminar usuario
-//@route    DELETE /api/user/id
+//@route    DELETE /api/user/:id
 //@access   Private(admin_role)
 exports.deleteUser = async(req, res) => {
     try {
@@ -322,6 +338,37 @@ exports.deleteUser = async(req, res) => {
             success: false,
             msg: 'Error en el servidor',
             error
+        })
+    }
+}
+
+//@desc     Buscar usuario
+//@route    GET /api/user/search/:termino
+//@access   Private(admin_role)
+exports.search = async(req, res) => {
+    try {
+        const termino = req.params.termino;
+        const exp = new RegExp(termino, 'i');
+
+        await Usuario.find({ nombre: exp }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: "Error al buscar usuario",
+                    errors: err
+                });
+            }
+            return res.status(201).json({
+                success: true,
+                msg: "Usuario encontrado",
+                data
+            });
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: "Error en el servidor",
+            error: error
         })
     }
 }

@@ -68,10 +68,10 @@ exports.login = (req, res) => {
 
     function obtenerMenu(role) {
         var menu = [
-            { titulo: 'Empresas', url: '/enterprises' }, //0
+            { titulo: 'Empresas', url: '/admin-enterprise' }, //0
             { //1
                 titulo: 'Gestionar',
-                url: '/enterprises',
+                url: '/admin-enterprise',
                 submenu: [
                     { titulo: 'Usuarios', url: '/admin-user' },
                     { titulo: 'Planes', url: '/admin-plan' },
