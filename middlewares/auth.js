@@ -20,5 +20,7 @@ module.exports = (req, res, next) => {
         msg: 'Token válido',
         decoded: decoded 
 })*/
+
     })
+
 }

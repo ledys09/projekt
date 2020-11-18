@@ -8,6 +8,7 @@ const { validationResult } = require('express-validator')
 //@route    POST    /api/login
 //@access   public
 exports.login = (req, res) => {
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -16,6 +17,7 @@ exports.login = (req, res) => {
             errors: errors
         });
     }
+
     try {
         const body = req.body;
 
@@ -51,9 +53,11 @@ exports.login = (req, res) => {
                 token: token,
                 usuario: usuariodb,
                 id: usuariodb._id,
-                role: usuariodb.role
+                role: usuariodb.role,
+                menu: obtenerMenu(usuariodb.role)
             })
         })
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -61,5 +65,44 @@ exports.login = (req, res) => {
             error
         })
     }
+
+    function obtenerMenu(role) {
+        var menu = [
+            { titulo: 'Empresas', url: '/enterprises' }, //0
+            { //1
+                titulo: 'Gestionar',
+                url: '/enterprises',
+                submenu: [
+                    { titulo: 'Usuarios', url: '/admin-user' },
+                    { titulo: 'Planes', url: '/admin-plan' },
+                    { titulo: 'Plantillas', url: '/admin-template' },
+                ]
+            },
+            { //2
+                titulo: 'Mi sitio web',
+                url: '/dashboard',
+                submenu: [
+                    { titulo: 'Paginas', url: '/pages' },
+                    { titulo: 'Archivos', url: '/files' },
+                    { titulo: 'Categorias', url: '/categories' },
+                    { titulo: 'Productos', url: '/products' }
+                ]
+            },
+            { titulo: 'Plantillas', url: '/templates' }, //3
+            { titulo: 'Configuración', url: '/setting' }, //4
+        ];
+
+        if (role === 'admin_role') {
+            menu.splice(2)
+        }
+        if (role === 'enterprise_role') {
+            menu.splice(0, 2);
+        }
+        if (role === 'client_role') {
+            menu.splice(1)
+        }
+        return menu;
+    }
+
 
 }
