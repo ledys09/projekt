@@ -53,7 +53,7 @@ router.route("/registeradmin").post([
 
 router.route("/users/:role").get(auth, authorize("admin_role"), users);
 
-router.route("/:id").get(user);
+router.route("/:id").get(auth, authorize("admin_role"), user);
 
 router.route("/search/:termino").get(auth, authorize("admin_role"), search)
 

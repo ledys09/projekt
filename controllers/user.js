@@ -175,12 +175,12 @@ exports.registerAdmin = async(req, res) => {
 
 //@desc     Obtener un solo usuario
 //@route    GET /api/user/:id
-//@access   Public
+//@access   Private (auth)
 exports.user = async(req, res) => {
     try {
         const id = req.params.id;
         //console.log(empresa_id)
-        await Usuario.find({ _id: id }, (err, data) => {
+        await Usuario.find({ _id: id }, (err, usuarioDB) => {
             if (err) {
                 return res.status(400).json({
                     success: false,
@@ -188,7 +188,7 @@ exports.user = async(req, res) => {
                     errors: err
                 })
             }
-            if (data == '') {
+            if (usuarioDB == '') {
                 return res.status(404).json({
                     success: false,
                     msg: 'No existe usuario'
@@ -197,7 +197,7 @@ exports.user = async(req, res) => {
             return res.status(200).json({
                 success: true,
                 msg: 'Usuario obtenido',
-                data
+                usuarioDB
             })
         })
     } catch (error) {
@@ -219,7 +219,7 @@ exports.users = async(req, res) => {
         var desde = req.query.desde || 0;
         desde = Number(desde);
         //console.log(empresa_id)
-        await Usuario.find({ role: role }, 'nombre correo foto role nombreEmpresa ')
+        await Usuario.find({ role: role })
             .skip(desde)
             .limit(5)
             .exec(
@@ -245,6 +245,10 @@ exports.users = async(req, res) => {
                                 errors: err
                             })
                         }
+                       data.forEach(element => {
+                           element.contrasena = ':)';
+                           
+                       });
                         return res.status(200).json({
                             success: true,
                             msg: 'Usuarios obtenidos',
@@ -283,7 +287,6 @@ exports.updateUser = async(req, res) => {
                 'plan'
             ]
         );
-
 
         Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, UsuarioDB) => {
             if (err) {
@@ -349,8 +352,8 @@ exports.search = async(req, res) => {
     try {
         const termino = req.params.termino;
         const exp = new RegExp(termino, 'i');
-
-        await Usuario.find({ nombre: exp }, (err, data) => {
+        // db.coleccion.find({$or:[{filtro1},{filtro2},...{filtroN}]});
+        await Usuario.find({ $or: [{ nombre: exp }, { nombreEmpresa: exp }] }, (err, data) => {
             if (err) {
                 return res.status(400).json({
                     success: false,

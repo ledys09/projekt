@@ -116,7 +116,7 @@ exports.filesUser = async(req, res) => {
                 })
             }
         });
-        const path = `./uploads/filesEnterprise/${idEmpresa}/${nombreArchivo}`;
+        const path = pathD.resolve(__dirname, `../uploads/filesEnterprise/${idEmpresa}/${nombreArchivo}`);
         archivoSubir.mv(path, (err) => {
             if (err) {
                 return res.status(400).json({
@@ -136,6 +136,7 @@ exports.filesUser = async(req, res) => {
             nombreArchivo,
             tipo: tipoDB,
             url: path,
+            extension: extension,
             usuario: usuario._id
         })
         await newFile.save(err => {
@@ -184,6 +185,16 @@ exports.files = async(req, res) => {
                     err
                 })
             }
+
+            fileDB.forEach((element, i) => {
+                // console.log(element.url)
+                const pathImg = element.url;
+                if (fs.existsSync(pathImg)) {
+                    console.log('path', i);
+                    res.sendFile(pathImg);
+                }
+            });
+
             return res.status(200).json({
                 success: true,
                 msg: 'Archivos',
@@ -191,6 +202,7 @@ exports.files = async(req, res) => {
             })
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success: false,
             msg: 'Error interno del servidor',
