@@ -8,6 +8,7 @@ const {
     imgPerfil,
     img,
     files,
+    getFiles,
     updateFile,
     deleteFile
 } = require('../controllers/upload');
@@ -18,9 +19,10 @@ app.use(fileUpload({ useTempFiles: true }));
 
 app.route("/img-perfil/:tipo/:id").put(imgPerfil);
 
-app.route("/files").post(auth, authorize("enterprise_role"), filesUser);
+app.route("/files/:id").post(filesUser);
 
-app.route("/:tipo").get(auth, authorize("enterprise_role"), files);
+app.route("/:id/:tipo").get(files);
+app.route("/get/:id/:archivo").get(getFiles);
 
 app.route("/perfil/:tipo/:img").get(img);
 

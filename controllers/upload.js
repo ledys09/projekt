@@ -86,12 +86,13 @@ exports.imgPerfil = async(req, res) => {
 };
 
 //@desc     Subir archivos empresa
-//@route    POST /api/upload/files
+//@route    POST /api/upload/files/:id
 //@access   Private (enterprise_role)
 exports.filesUser = async(req, res) => {
     try {
-        const usuario = req.usuario;
-        const idEmpresa = usuario._id;
+        // console.log(req.files)
+        //const usuario = req.usuario;
+        const idEmpresa = req.params.id;
 
         if (!req.files) {
             return res.status(400).json({
@@ -106,7 +107,7 @@ exports.filesUser = async(req, res) => {
         const tipoArchivo = tipoDividido[0]
         const nombreDividido = archivoSubir.name.split('.');
         const extension = nombreDividido[nombreDividido.length - 1]
-        const nombreArchivo = `${ usuario._id }-${ new Date().getMilliseconds() }.${ extension }`;
+        const nombreArchivo = `${ idEmpresa }-${ new Date().getMilliseconds() }.${ extension }`;
         fs.mkdir(pathD.join(__dirname, `../uploads/filesEnterprise/${idEmpresa}`), { recursive: true }, (err) => {
             if (err) {
                 return res.status(400).json({
@@ -132,12 +133,13 @@ exports.filesUser = async(req, res) => {
         } else {
             tipoDB = tipoArchivo;
         }
+        //console.log(imagePath)
         let newFile = new Upload({
             nombreArchivo,
             tipo: tipoDB,
             url: path,
             extension: extension,
-            usuario: usuario._id
+            usuario: idEmpresa
         })
         await newFile.save(err => {
             if (err) {
@@ -154,6 +156,7 @@ exports.filesUser = async(req, res) => {
             });
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success: false,
             msg: 'Error interno del servidor',
@@ -163,14 +166,14 @@ exports.filesUser = async(req, res) => {
 };
 
 //@desc     Obtener los archivos por tipo
-//@route    GET /api/upload/:tipo
+//@route    GET /api/upload/:id/:tipo
 //@access   Private(enteprise_role)
 exports.files = async(req, res) => {
     try {
         const tipo = req.params.tipo
-        const usuario = req.usuario;
+        const id = req.params.id;
 
-        await Upload.find({ tipo: tipo, usuario: usuario._id }, (err, fileDB) => {
+        await Upload.find({ tipo: tipo, usuario: id }, (err, fileDB) => {
             if (err) {
                 return res.status(400).json({
                     success: false,
@@ -186,19 +189,24 @@ exports.files = async(req, res) => {
                 })
             }
 
-            fileDB.forEach((element, i) => {
+            /* fileDB.forEach((element, i) => {
                 // console.log(element.url)
-                const pathImg = element.url;
+                const pathImg = pathD.resolve(__dirname, `.${element.url}`);
+                //  const pathImg = element.url;
                 if (fs.existsSync(pathImg)) {
-                    console.log('path', i);
+                    console.log(pathImg, i);
                     res.sendFile(pathImg);
+                } else {
+                    console.log('error')
                 }
-            });
+            }); */
+            const total = fileDB.length;
 
             return res.status(200).json({
                 success: true,
                 msg: 'Archivos',
-                fileDB
+                fileDB,
+                total
             })
         })
     } catch (error) {
@@ -210,6 +218,34 @@ exports.files = async(req, res) => {
         })
     }
 };
+
+//@desc     Obtener archivo de empresa
+//@route    GET /api/upload/get/:id/:archivo
+//@access   Private(enteprise_role)
+exports.getFiles = (req, res) => {
+    try {
+        const archivo = req.params.archivo
+        const id = req.params.id;
+
+        const pathImg = pathD.resolve(__dirname, `../uploads/filesEnterprise/${id}/${archivo}`);
+        if (fs.existsSync(pathImg)) {
+
+            res.sendFile(pathImg);
+        } else {
+            console.log(pathImg)
+            const pathNoImg = pathD.resolve(__dirname, '../uploads/imgProfile/no-img.png');
+            res.sendFile(pathNoImg);
+        }
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            msg: 'Error interno del servidor',
+            error
+        })
+    }
+}
 
 //@desc     Actualizar un archivo
 //@route    PUT /api/upload/:id
@@ -297,6 +333,7 @@ exports.img = async(req, res) => {
 
 
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             success: false,
             msg: 'Error interno del servidor',
