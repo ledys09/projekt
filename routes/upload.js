@@ -26,7 +26,7 @@ app.route("/get/:id/:archivo").get(getFiles);
 
 app.route("/perfil/:tipo/:img").get(img);
 
-app.route("/:id").put(auth, authorize("enterprise_role"), updateFile);
+app.route("/:idE/:idA").put(auth, authorize("enterprise_role"), updateFile);
 
 app.route("/:id").delete(auth, authorize("enterprise_role"), deleteFile)
 

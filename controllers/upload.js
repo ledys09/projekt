@@ -248,13 +248,48 @@ exports.getFiles = (req, res) => {
 }
 
 //@desc     Actualizar un archivo
-//@route    PUT /api/upload/:id
+//@route    PUT /api/upload/:idE/:idA
 //@access   Private(enterprise_role)
 exports.updateFile = async(req, res) => {
     try {
-        const id = req.params.id;
+        const empresaID = req.params.idE;
+        const _idArchivo = req.params.idA;
+
         const body = _.pick(req.body, ['nombreArchivo']);
-        Upload.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, fileDB) => {
+        // console.log(body.nombreArchivo);
+
+        await Upload.findById(_idArchivo, (err, archivo) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error en base de datos',
+                    err
+                })
+            }
+            if (!archivo) {
+                return res.status(404).json({
+                    success: false,
+                    msg: 'No se encontró archivo',
+                    err
+                })
+            }
+
+            const pathViejo = pathD.resolve(__dirname, `../uploads/filesEnterprise/${empresaID}/${archivo.nombreArchivo}`);
+            if (fs.existsSync(pathViejo)) {
+                const pathNuevo = pathD.resolve(__dirname, `../uploads/filesEnterprise/${empresaID}/${req.body.nombreArchivo}.${archivo.extension}`)
+                fs.rename(pathViejo, pathNuevo, (err) => {
+                    if (err) throw err;
+                    fs.stat(pathNuevo, (err, stats) => {
+                        if (err) throw err;
+                        //console.log(`stats: ${JSON.stringify(stats)}`);
+                    });
+                });
+            }
+            body.nombreArchivo = body.nombreArchivo + '.' + archivo.extension;
+        });
+
+        console.log(body);
+        Upload.findByIdAndUpdate(_idArchivo, body, { new: true, runValidators: true, context: 'query' }, (err, fileDB) => {
             if (err) {
                 return res.status(400).json({
                     success: false,
@@ -268,6 +303,7 @@ exports.updateFile = async(req, res) => {
                 fileDB
             })
         })
+
 
     } catch (error) {
         console.log(error)
