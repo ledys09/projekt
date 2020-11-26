@@ -7,7 +7,8 @@ const {
     createCategory,
     categories,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+    searchC
 } = require('../controllers/category')
 
 router.route("/").post([
@@ -21,6 +22,8 @@ router.route("/:idEmpresa").get(categories);
 
 router.route("/:id").put(auth, authorize("enterprise_role"), updateCategory);
 
-router.route("/:id").delete(auth, authorize("enterprise_role"), deleteCategory)
+router.route("/:id").delete(auth, authorize("enterprise_role"), deleteCategory);
+router.route("/search/:termino").get(auth, authorize("enterprise_role"), searchC)
+
 
 module.exports = router;

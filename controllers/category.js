@@ -147,3 +147,35 @@ exports.deleteCategory = async(req, res) => {
         })
     }
 }
+
+//@desc     Buscar Categoria
+//@route    GET /api/category/search/:termino
+//@access   public
+exports.searchC = async(req, res) => {
+    try {
+        const id = req.usuario._id;
+        const termino = req.params.termino;
+        const exp = new RegExp(termino, 'i');
+        // db.coleccion.find({$or:[{filtro1},{filtro2},...{filtroN}]});
+        await Categoria.find({ nombreCategoria: exp, usuario: id }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: "Error al buscar categoria",
+                    errors: err
+                });
+            }
+            return res.status(201).json({
+                success: true,
+                msg: "Categoria encontrada",
+                data
+            });
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: "Error en el servidor",
+            error: error
+        })
+    }
+}

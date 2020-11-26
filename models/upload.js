@@ -8,6 +8,7 @@ const uploadSchema = new Schema({
     url: { type: String, required: [true, 'Url obligatorio'] },
     extension: { type: String, required: [true, 'Extensión obligatorio'] },
     usuario: { type: Schema.Types.ObjectId, required: true, ref: 'Usuario' }
+
 })
 
 uploadSchema.plugin(uniqueValidator, { message: '{PATH} debe ser único' });

@@ -10,13 +10,15 @@ const {
     files,
     getFiles,
     updateFile,
-    deleteFile
+    deleteFile,
+    searchA
 } = require('../controllers/upload');
 
 
 app.use(fileUpload({ useTempFiles: true }));
 
 
+app.route("/search/:termino").get(auth, authorize("enterprise_role"), searchA)
 app.route("/img-perfil/:tipo/:id").put(imgPerfil);
 
 app.route("/files/:id").post(filesUser);

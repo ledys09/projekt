@@ -1,6 +1,5 @@
 const Producto = require('../models/product')
 const { validationResult } = require('express-validator')
-const product = require('../models/product')
 
 //@desc     Crear un nuevo producto
 //@route    POST /api/product
@@ -195,6 +194,39 @@ exports.deleteProduct = async(req, res) => {
             success: false,
             msg: 'Error en el servidor',
             error
+        })
+    }
+}
+
+//@desc     Buscar producto
+//@route    GET /api/product/search/:termino
+//@access   public
+exports.searchP = async(req, res) => {
+    try {
+
+        const id = req.usuario._id;
+        const termino = req.params.termino;
+        const exp = new RegExp(termino, 'i');
+        // db.coleccion.find({$or:[{filtro1},{filtro2},...{filtroN}]});
+        await Producto.find({ nombreProducto: exp, usuario: id }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: "Error al buscar producto",
+                    errors: err
+                });
+            }
+            return res.status(201).json({
+                success: true,
+                msg: "Producto encontrado",
+                data
+            });
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: "Error en el servidor",
+            error: error
         })
     }
 }

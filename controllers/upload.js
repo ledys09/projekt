@@ -69,6 +69,7 @@ exports.imgPerfil = async(req, res) => {
                         err
                     })
                 }
+                usuarioActualizado.contrasena = ':)';
                 return res.status(200).json({
                     success: true,
                     msg: 'Se actualizó foto del usuario',
@@ -288,7 +289,7 @@ exports.updateFile = async(req, res) => {
             body.nombreArchivo = body.nombreArchivo + '.' + archivo.extension;
         });
 
-        console.log(body);
+        //console.log(body);
         Upload.findByIdAndUpdate(_idArchivo, body, { new: true, runValidators: true, context: 'query' }, (err, fileDB) => {
             if (err) {
                 return res.status(400).json({
@@ -377,3 +378,35 @@ exports.img = async(req, res) => {
         })
     }
 };
+
+//@desc     Buscar Archivo
+//@route    GET /api/upload/search/:termino
+//@access   Private(enterprise_role)
+exports.searchA = async(req, res) => {
+    try {
+        const id = req.usuario._id;
+        const termino = req.params.termino;
+        const exp = new RegExp(termino, 'i');
+        // db.coleccion.find({$or:[{filtro1},{filtro2},...{filtroN}]});
+        await Upload.find({ nombreArchivo: exp, usuario: id }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: "Error al buscar Archivo",
+                    errors: err
+                });
+            }
+            return res.status(201).json({
+                success: true,
+                msg: "Archivo encontrado",
+                data
+            });
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: "Error en el servidor",
+            error: error
+        })
+    }
+}
