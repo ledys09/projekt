@@ -11,7 +11,8 @@ const {
     getFiles,
     updateFile,
     deleteFile,
-    searchA
+    searchA,
+    imgProducto
 } = require('../controllers/upload');
 
 
@@ -20,6 +21,7 @@ app.use(fileUpload({ useTempFiles: true }));
 
 app.route("/search/:termino").get(auth, authorize("enterprise_role"), searchA)
 app.route("/img-perfil/:tipo/:id").put(imgPerfil);
+app.route("/img-product/:idEmpresa/:idProducto").put(imgProducto);
 
 app.route("/files/:id").post(filesUser);
 

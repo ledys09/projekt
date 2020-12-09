@@ -1,11 +1,9 @@
 const Usuario = require('../models/user');
-const Upload = require('../models/upload')
+const Upload = require('../models/upload');
+const Producto = require('../models/product')
 const fs = require('fs');
 const pathD = require('path');
 const _ = require('underscore');
-
-
-
 
 //@desc     Actualizar foto de perfil
 //@route    PUT /api/upload/img-perfil/:tipo/:id
@@ -85,6 +83,86 @@ exports.imgPerfil = async(req, res) => {
         });
     }
 };
+
+
+//@desc     Actualizar foto de producto
+//@route    PUT /api/upload/img-product/:idEmpresa/:idProducto
+//@access   Private (auth)
+exports.imgProducto = async(req, res) => {
+    try {
+        const idEmpresa = req.params.idEmpresa;
+        const idProducto = req.params.idProducto;
+
+        if (!req.files) {
+            return res.status(400).json({
+                success: false,
+                msg: 'No seleccionó imagen',
+                error: { message: 'Debe seleccionar una imagen' }
+            })
+        }
+
+        const archivoSubir = req.files.archivoSubir
+        const nombreDividido = archivoSubir.name.split('.');
+        const extension = nombreDividido[nombreDividido.length - 1]
+        const extensionesValidas = ['png', 'jpg', 'gif', 'jpeg']
+
+        if (!extensionesValidas.includes(extension)) {
+            return res.status(400).json({
+                success: false,
+                error: { msg: 'Extensión no válida' }
+            })
+        }
+
+        const nombreArchivo = `${idEmpresa }-${ new Date().getMilliseconds() }.${ extension }`;
+        const path = `./uploads/filesEnterprise/${idEmpresa}/${nombreArchivo}`;
+        archivoSubir.mv(path, (err) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'No se movió la imagen',
+                    err
+                })
+            }
+        });
+        // asignar foto a un usuario
+        await Producto.findById(idProducto, (err, producto) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'No se encontró producto',
+                    err
+                })
+            }
+
+            const pathBefore = `./uploads/filesEnterprise/${idEmpresa}/${producto.fotoProducto}`
+            if (fs.existsSync(pathBefore)) {
+                fs.unlinkSync(pathBefore);
+            }
+            producto.fotoProducto = nombreArchivo;
+            producto.save((err, productoActualizado) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        msg: 'No se actulizó foto del producto',
+                        err
+                    })
+                }
+                return res.status(200).json({
+                    success: true,
+                    msg: 'Se actualizó foto del producto',
+                    data: productoActualizado
+                });
+            });
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error interno del servidor',
+            error
+        });
+    }
+};
+
 
 //@desc     Subir archivos empresa
 //@route    POST /api/upload/files/:id
@@ -410,3 +488,84 @@ exports.searchA = async(req, res) => {
         })
     }
 }
+
+
+//@desc     Subir productos empresa
+//@route    POST /api/upload/product/:idEmpresa
+//@access   Private (enterprise_role)
+exports.filesUser = async(req, res) => {
+    try {
+        // console.log(req.files)
+        //const usuario = req.usuario;
+        const idEmpresa = req.params.id;
+
+        if (!req.files) {
+            return res.status(400).json({
+                success: false,
+                msg: 'No seleccionó  archivo',
+                error: { message: 'Debe seleccionar un archivo' }
+            })
+        }
+        //console.log(req.files)
+        const archivoSubir = req.files.archivoSubir
+        const tipoDividido = archivoSubir.mimetype.split('/');
+        const tipoArchivo = tipoDividido[0]
+        const nombreDividido = archivoSubir.name.split('.');
+        const extension = nombreDividido[nombreDividido.length - 1]
+        const nombreArchivo = `${ idEmpresa }-${ new Date().getMilliseconds() }.${ extension }`;
+        fs.mkdir(pathD.join(__dirname, `../uploads/filesEnterprise/${idEmpresa}`), { recursive: true }, (err) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'No se creó el directorio',
+                    err
+                })
+            }
+        });
+        const path = pathD.resolve(__dirname, `../uploads/filesEnterprise/${idEmpresa}/${nombreArchivo}`);
+        archivoSubir.mv(path, (err) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'No se movió la imagen',
+                    err
+                })
+            }
+        });
+        let tipoDB = '';
+        if (tipoArchivo != 'image' && tipoArchivo != 'video') {
+            tipoDB = 'others';
+        } else {
+            tipoDB = tipoArchivo;
+        }
+        //console.log(imagePath)
+        let newFile = new Upload({
+            nombreArchivo,
+            tipo: tipoDB,
+            url: path,
+            extension: extension,
+            usuario: idEmpresa
+        })
+        await newFile.save(err => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error al guardar archivo',
+                    err
+                })
+            }
+            return res.status(201).json({
+                success: true,
+                msg: 'Archivo guardado',
+                data: newFile
+            });
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            msg: 'Error interno del servidor',
+            error
+        })
+    }
+};
