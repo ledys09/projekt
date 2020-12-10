@@ -20,6 +20,7 @@ const user = require("./routes/user");
 const category = require("./routes/category");
 const product = require("./routes/product");
 const upload = require("./routes/upload")
+const page = require("./routes/page")
 
 //  Rutas
 app.use("/api/login", login);
@@ -27,6 +28,8 @@ app.use("/api/user", user);
 app.use("/api/category", category);
 app.use("/api/product", product);
 app.use("/api/upload", upload);
+app.use("/api/page", page);
+
 
 
 //  Conexión
