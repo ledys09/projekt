@@ -80,7 +80,7 @@ exports.login = (req, res) => {
             },
             { //2
                 titulo: 'Mi sitio web',
-                url: '/dashboard',
+                url: '/oficial',
                 submenu: [
                     { titulo: 'Paginas', url: '/pages' },
                     { titulo: 'Archivos', url: '/files' },

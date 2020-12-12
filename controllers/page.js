@@ -119,10 +119,12 @@ exports.paginas = (req, res) => {
                     err
                 })
             }
+            //console.log(data.length);
             return res.status(200).json({
                 success: true,
                 msg: 'encontradas',
-                data
+                data,
+                total: data.length
             })
         })
     } catch (error) {
@@ -228,9 +230,9 @@ exports.editarBloque = (req, res) => {
             bjs,
             background,
             grids
-        } = req.body
-
-        Pagina.update({ _id: idPagina, 'bloques._id': mongoose.Types.ObjectId(idBloque) }, {
+        } = req.body.bloque
+            // console.log(req.body)
+        Pagina.update({ _id: mongoose.Types.ObjectId(idPagina), 'bloques._id': mongoose.Types.ObjectId(idBloque) }, {
                 'bloques.$.bhtml': bhtml,
                 'bloques.$.bcss': bcss,
                 'bloques.$.bjs': bjs,
