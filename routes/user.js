@@ -8,6 +8,7 @@ const {
     registerEnterprise,
     registerAdmin,
     users,
+    enterprises,
     user,
     search,
     updateUser,
@@ -52,6 +53,7 @@ router.route("/registeradmin").post([
 ], registerAdmin);
 
 router.route("/users/:role").get(auth, authorize("admin_role"), users);
+router.route("/enterprises").get(auth, enterprises);
 
 router.route("/:id").get(auth, authorize("admin_role"), user);
 

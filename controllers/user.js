@@ -210,9 +210,53 @@ exports.user = async(req, res) => {
 
 }
 
+//@desc     Obtener usuarios empresa
+//@route    GET /api/user/enterprises
+//@access   public
+exports.enterprises = async(req, res) => {
+    try {
+        await Usuario.find({ role: 'enterprise_role' }, (err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Error en base de datos',
+                    errors: err
+                })
+            }
+            Usuario.count({ role: 'enterprise_role' }, (err, conteo) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        msg: 'Error en el conteo',
+                        errors: err
+                    })
+                }
+                data.forEach(element => {
+                    element.contrasena = ':)';
+                });
+                return res.status(200).json({
+                    success: true,
+                    msg: 'Empresas obtenidas',
+                    data,
+                    total: conteo
+                })
+            })
+
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            msg: 'Error en el servidor',
+            error
+        })
+    }
+
+}
+
+
 //@desc     Obtener usuarios por rol
 //@route    GET /api/user/:role
-//@access   Private (admin_role)
+//@access   Private
 exports.users = async(req, res) => {
     try {
         const role = req.params.role;
@@ -245,10 +289,10 @@ exports.users = async(req, res) => {
                                 errors: err
                             })
                         }
-                       data.forEach(element => {
-                           element.contrasena = ':)';
-                           
-                       });
+                        data.forEach(element => {
+                            element.contrasena = ':)';
+
+                        });
                         return res.status(200).json({
                             success: true,
                             msg: 'Usuarios obtenidos',
@@ -267,6 +311,7 @@ exports.users = async(req, res) => {
     }
 
 }
+
 
 
 //@desc     Actualizar usuario
